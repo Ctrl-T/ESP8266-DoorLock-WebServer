@@ -132,6 +132,12 @@ def collect_log():
         return
     tcp_client.send("LOG\n".encode())
 
+def restart_board():
+    global tcp_client
+    if tcp_client is None:
+        return
+    tcp_client.send("RESTART\n".encode())
+
 
 class LogCollector(threading.Thread):
     def __init__(self):
@@ -139,6 +145,7 @@ class LogCollector(threading.Thread):
 
     def run(self):
         schedule.every().day.at('23:50').do(collect_log)
+        schedule.every().day.at('00:00').do(restart_board)
         # schedule.every(1).minutes.do(collect_log)
         while True:
             schedule.run_pending()
